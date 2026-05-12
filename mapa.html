@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Mapa do Museu Vivo – escolha qual réptil explorar na Caatinga." />
+  <title>Mapa do Museu – Répteis da Caatinga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Teko:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0D0500" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Fundo do sítio visto de cima ── */
+    #mapa-fundo {
+      position: absolute; inset: 0;
+      background: #2A5A10;
+      overflow: hidden;
+    }
+
+    /* Textura de vegetação pontilhada */
+    #mapa-fundo::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle, #3A7A18 2px, transparent 2px),
+        radial-gradient(circle, #224A0C 1px, transparent 1px);
+      background-size: 28px 28px, 14px 14px;
+      background-position: 0 0, 7px 7px;
+      opacity: .55;
+    }
+
+    /* Caminho de areia central (horizontal) */
+    #caminho-h {
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 54px;
+      transform: translateY(-50%);
+      background: linear-gradient(180deg, #C98A30 0%, #B07020 50%, #C98A30 100%);
+      box-shadow: 0 3px 12px rgba(0,0,0,.4);
+    }
+    #caminho-h::before, #caminho-h::after {
+      content: '';
+      position: absolute; left: 0; right: 0; height: 3px;
+      background: rgba(180,130,60,.4);
+    }
+    #caminho-h::before { top: 0; }
+    #caminho-h::after  { bottom: 0; }
+
+    /* Caminho vertical central */
+    #caminho-v {
+      position: absolute;
+      left: 50%; top: 0; bottom: 0;
+      width: 54px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, #C98A30, #B07020, #C98A30);
+      box-shadow: 3px 0 12px rgba(0,0,0,.4);
+    }
+
+    /* Círculo central (praça) */
+    #praca {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 68px; height: 68px;
+      background: radial-gradient(circle, #D4A843 0%, #B07020 100%);
+      border-radius: 50%;
+      border: 3px solid #8A5A10;
+      box-shadow: 0 0 0 6px rgba(180,120,40,.25);
+      z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+
+    /* Manchas de vegetação decorativas */
+    .mancha {
+      position: absolute; border-radius: 50%;
+      background: radial-gradient(circle, #3A8A18, #2A5A10);
+      opacity: .7;
+    }
+
+    /* Riacho decorativo */
+    .riacho {
+      position: absolute;
+      background: rgba(40,80,160,.35);
+      border-radius: 50px;
+    }
+
+    /* ── Header ── */
+    #header-mapa {
+      position: absolute; top: 0; left: 0; right: 0; height: 42px;
+      background: rgba(13,5,0,.82);
+      border-bottom: 1px solid rgba(212,168,67,.4);
+      display: flex; align-items: center; padding: 0 14px;
+      z-index: 20;
+    }
+    #btn-menu-voltar {
+      font-size: .52rem; padding: 7px 14px;
+      background: transparent; border: 1px solid rgba(212,168,67,.5);
+      color: var(--creme); font-family: 'Press Start 2P',monospace;
+      cursor: pointer; border-radius: 3px;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+    #btn-menu-voltar:hover { background: rgba(212,168,67,.15); }
+    #titulo-mapa {
+      flex: 1; text-align: center;
+      font-family: 'Press Start 2P',monospace; font-size: .52rem;
+      color: var(--ouro); letter-spacing: .06em;
+      padding-right: 80px; /* compensar botão esquerdo */
+    }
+    #score-total-hud {
+      font-family: 'Press Start 2P',monospace; font-size: .44rem;
+      color: var(--ouro); white-space: nowrap;
+    }
+
+    /* ── Recintos ── */
+    .recinto {
+      position: absolute;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      z-index: 10;
+    }
+
+    /* Posições dos recintos */
+    #recinto-1 { left: 8%; top: 50%; transform: translateY(-50%); }
+    #recinto-2 { left: 50%; top: 14%; transform: translateX(-50%); }
+    #recinto-3 { right: 8%; top: 50%; transform: translateY(-50%); }
+
+    .recinto-card {
+      background: var(--creme);
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(42,20,0,.06) 20px, rgba(42,20,0,.06) 21px);
+      border: 4px solid #5A3A00;
+      border-radius: 6px;
+      padding: 14px 16px 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      box-shadow:
+        inset 0 2px 6px rgba(255,255,255,.6),
+        inset 0 -2px 6px rgba(0,0,0,.15),
+        4px 4px 0 #3A2000,
+        6px 6px 12px rgba(0,0,0,.45);
+      position: relative;
+      min-width: 128px;
+    }
+
+    /* Plaquinha de madeira no topo */
+    .recinto-card::before {
+      content: attr(data-label);
+      position: absolute;
+      top: -14px; left: 50%; transform: translateX(-50%);
+      background: #5A3A00; color: #F5E6C8;
+      font-family: 'Teko', sans-serif; font-size: 11px;
+      padding: 2px 8px; border-radius: 3px;
+      white-space: nowrap; letter-spacing: .08em;
+    }
+
+    .recinto-mascote {
+      font-size: 56px; line-height: 1;
+      filter: drop-shadow(2px 2px 4px rgba(0,0,0,.3));
+      transition: transform .3s ease;
+    }
+    .recinto-card:hover .recinto-mascote { transform: scale(1.1) rotate(-3deg); }
+
+    .recinto-mascote img {
+      width: 120px; height: 120px; object-fit: contain;
+    }
+
+    .recinto-nome {
+      font-family: 'Press Start 2P', monospace;
+      font-size: .5rem; color: #2A1400;
+      text-align: center; line-height: 1.5;
+    }
+
+    /* Estrelas do recinto */
+    .recinto-estrelas {
+      display: flex; gap: 4px; font-size: 16px;
+    }
+    .star-on  { color: #D4A843; text-shadow: 0 0 6px rgba(212,168,67,.6); }
+    .star-off { color: #888; opacity: .5; }
+
+    /* Badge de pontuação */
+    .recinto-score {
+      font-family: 'Teko', sans-serif; font-size: 16px;
+      color: #2A1400; font-weight: 600;
+      background: rgba(212,168,67,.2); border-radius: 3px;
+      padding: 1px 8px; min-width: 64px; text-align: center;
+    }
+
+    .recinto-btn {
+      font-size: .5rem; padding: 9px 18px; width: 100%;
+    }
+
+    /* Overlay de bloqueio */
+    .recinto-lock {
+      display: none;
+      position: absolute; inset: 0;
+      background: rgba(13,5,0,.72);
+      border-radius: 4px;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 6px;
+      z-index: 5;
+    }
+    .recinto-lock.visivel { display: flex; }
+    .lock-icon { font-size: 28px; filter: drop-shadow(0 0 6px rgba(0,0,0,.8)); }
+    .lock-texto {
+      font-family: 'Teko', sans-serif; font-size: 14px;
+      color: var(--creme); text-align: center; padding: 0 8px;
+    }
+
+    /* Halo de destaque no recinto desbloqueado e não concluído */
+    .recinto-card.destaque {
+      animation: pulso-borda 2.5s ease infinite;
+    }
+    @keyframes pulso-borda {
+      0%,100% { box-shadow: 4px 4px 0 #3A2000, 6px 6px 12px rgba(0,0,0,.45), 0 0 0 0 rgba(212,168,67,.4); }
+      50%      { box-shadow: 4px 4px 0 #3A2000, 6px 6px 12px rgba(0,0,0,.45), 0 0 0 8px rgba(212,168,67,0); }
+    }
+
+    /* ── Rodapé de aviso ── */
+    #aviso-ranking {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(13,5,0,.88);
+      border-top: 1px solid var(--ouro);
+      padding: 6px 14px;
+      font-family: 'Teko', sans-serif; font-size: 13px;
+      color: var(--creme); text-align: center;
+      z-index: 20; letter-spacing: .04em;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    /* ── Botão pontuação final ── */
+    #btn-pontuacao {
+      position: absolute; bottom: 38px; left: 50%; transform: translateX(-50%);
+      z-index: 20; display: none;
+    }
+
+    /* ── Legendas de caminho ── */
+    .placa {
+      position: absolute; background: #5A3A00; color: #F5E6C8;
+      font-family: 'Teko',sans-serif; font-size: 12px; letter-spacing:.08em;
+      padding: 3px 10px; border-radius: 3px; z-index: 3;
+      box-shadow: 2px 2px 4px rgba(0,0,0,.4);
+    }
+  </style>
+</head>
+<body>
+  <div id="aviso-rotacao" role="alert" aria-live="polite">
+    <div class="icone-rotacao">📱</div>
+    <p style="font-family:'Press Start 2P',monospace;font-size:.65rem;color:var(--ouro);line-height:1.8;text-align:center;">
+      Gire o dispositivo<br>para paisagem
+    </p>
+  </div>
+
+  <div class="tela" id="tela-mapa">
+
+    <!-- ── Fundo do sítio ── -->
+    <div id="mapa-fundo">
+      <div id="caminho-h"></div>
+      <div id="caminho-v"></div>
+      <div id="praca">🌵</div>
+
+      <!-- Manchas de vegetação -->
+      <div class="mancha" style="width:90px;height:70px;top:6%;left:4%;"></div>
+      <div class="mancha" style="width:60px;height:50px;top:8%;left:30%;"></div>
+      <div class="mancha" style="width:75px;height:65px;top:5%;right:5%;"></div>
+      <div class="mancha" style="width:80px;height:60px;bottom:8%;left:6%;"></div>
+      <div class="mancha" style="width:55px;height:45px;bottom:10%;left:34%;"></div>
+      <div class="mancha" style="width:85px;height:70px;bottom:7%;right:4%;"></div>
+      <div class="mancha" style="width:40px;height:35px;top:22%;left:18%;"></div>
+      <div class="mancha" style="width:40px;height:35px;top:22%;right:18%;"></div>
+      <div class="mancha" style="width:38px;height:30px;bottom:22%;left:20%;"></div>
+      <div class="mancha" style="width:38px;height:30px;bottom:22%;right:20%;"></div>
+
+      <!-- Riacho decorativo -->
+      <div class="riacho" style="width:6px;height:80px;top:6%;left:42%;transform:rotate(12deg);"></div>
+      <div class="riacho" style="width:6px;height:60px;top:16%;left:43%;transform:rotate(8deg);"></div>
+
+      <!-- Placas de caminho -->
+      <div class="placa" style="top:52%;left:19%;">◄ COBRA</div>
+      <div class="placa" style="top:52%;right:14%;">JACARÉ ►</div>
+      <div class="placa" style="top:34%;left:48%;font-size:11px;">▲ DRAGÃO</div>
+    </div>
+
+    <!-- ── Header ── -->
+    <header id="header-mapa">
+      <button id="btn-menu-voltar" onclick="window.location.href='index.html'">← MENU</button>
+      <div id="titulo-mapa">MAPA DO MUSEU</div>
+      <div id="score-total-hud">⭐ <span id="score-hud-val">0</span></div>
+    </header>
+
+    <!-- ══════════════════════════════════
+         RECINTO 1 — COBRA (Juquinha)
+    ══════════════════════════════════ -->
+    <div class="recinto" id="recinto-1">
+      <div class="recinto-card" data-label="RECINTO 01">
+        <div class="recinto-mascote" id="mascote-1">
+          <img src="assets/cobra.png" alt="Cobra" onerror="this.parentNode.innerHTML='🐍';" />
+        </div>
+        <div class="recinto-nome">JUQUINHA<br>A COBRA</div>
+        <div class="recinto-estrelas" id="estrelas-1">
+          <span class="star-off">☆</span><span class="star-off">☆</span><span class="star-off">☆</span>
+        </div>
+        <div class="recinto-score" id="score-1">0 pts</div>
+        <button class="btn-ouro recinto-btn" id="btn-fase1" onclick="entrarFase(1)">ENTRAR</button>
+
+        <!-- Lock overlay -->
+        <div class="recinto-lock" id="lock-1">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-texto">Complete a fase anterior</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         RECINTO 2 — DRAGÃO
+    ══════════════════════════════════ -->
+    <div class="recinto" id="recinto-2">
+      <div class="recinto-card" data-label="RECINTO 02">
+        <div class="recinto-mascote" id="mascote-2">
+          <img src="assets/dragao.png" alt="Dragão" onerror="this.parentNode.innerHTML='🦎';" />
+        </div>
+        <div class="recinto-nome">O DRAGÃO<br>DA CAATINGA</div>
+        <div class="recinto-estrelas" id="estrelas-2">
+          <span class="star-off">☆</span><span class="star-off">☆</span><span class="star-off">☆</span>
+        </div>
+        <div class="recinto-score" id="score-2">0 pts</div>
+        <button class="btn-ouro recinto-btn" id="btn-fase2" onclick="entrarFase(2)">ENTRAR</button>
+
+        <div class="recinto-lock" id="lock-2">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-texto">Complete a fase anterior</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         RECINTO 3 — JACARÉ
+    ══════════════════════════════════ -->
+    <div class="recinto" id="recinto-3">
+      <div class="recinto-card" data-label="RECINTO 03">
+        <div class="recinto-mascote" id="mascote-3">
+          <img src="assets/jacare.png" alt="Jacaré" onerror="this.parentNode.innerHTML='🐊';" />
+        </div>
+        <div class="recinto-nome">O JACARÉ<br>DO SERTÃO</div>
+        <div class="recinto-estrelas" id="estrelas-3">
+          <span class="star-off">☆</span><span class="star-off">☆</span><span class="star-off">☆</span>
+        </div>
+        <div class="recinto-score" id="score-3">0 pts</div>
+        <button class="btn-ouro recinto-btn" id="btn-fase3" onclick="entrarFase(3)">ENTRAR</button>
+
+        <div class="recinto-lock" id="lock-3">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-texto">Complete a fase anterior</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botão pontuação final (só aparece se todas concluídas) -->
+    <button class="btn-ouro" id="btn-pontuacao" onclick="window.location.href='final.html'">
+      🏆 VER PONTUAÇÃO FINAL
+    </button>
+
+    <!-- ── Aviso Ranking ── -->
+    <div id="aviso-ranking">
+      🏆 Complete as 3 fases para pontuar e gravar seu nome no ranking do museu
+    </div>
+
+  </div><!-- /tela-mapa -->
+
+  <script src="js/progresso.js"></script>
+  <script src="js/audio.js"></script>
+  <script>
+    /* ══════════════════════════════════════════
+       LÓGICA DO MAPA
+    ══════════════════════════════════════════ */
+
+    /**
+     * Renderiza os N estrelas de um recinto (max 5, mas usamos 3 no visual)
+     */
+    function renderizarEstrelas(container, estrelas, max) {
+      max = max || 3;
+      container.innerHTML = '';
+      for (let i = 1; i <= max; i++) {
+        const s = document.createElement('span');
+        s.textContent = i <= estrelas ? '★' : '☆';
+        s.className   = i <= estrelas ? 'star-on' : 'star-off';
+        container.appendChild(s);
+      }
+    }
+
+    /**
+     * carregarMapa()
+     * Lê o progresso e atualiza cada recinto:
+     *   – estrelas, score, estado do botão, overlay de bloqueio
+     */
+    function carregarMapa() {
+      const prog = window.Progresso.getProgresso();
+
+      [1, 2, 3].forEach(function(n) {
+        const card       = document.querySelector('#recinto-' + n + ' .recinto-card');
+        const lock       = document.getElementById('lock-' + n);
+        const btn        = document.getElementById('btn-fase' + n);
+        const elEstrelas = document.getElementById('estrelas-' + n);
+        const elScore    = document.getElementById('score-' + n);
+
+        const desbloqueado = window.Progresso.isDesbloqueada(n);
+        const dados = prog['fase' + n];
+
+        /* Estrelas (mostra até 3 no card) */
+        const maxStars = Math.min(dados.estrelas, 3);
+        renderizarEstrelas(elEstrelas, maxStars, 3);
+
+        /* Score */
+        elScore.textContent = dados.score.toLocaleString('pt-BR') + ' pts';
+
+        /* Bloqueio */
+        if (!desbloqueado) {
+          lock.classList.add('visivel');
+          btn.disabled = true;
+          btn.style.pointerEvents = 'none';
+          btn.style.opacity = '.4';
+        } else {
+          lock.classList.remove('visivel');
+          btn.disabled = false;
+          btn.style.pointerEvents = '';
+          btn.style.opacity = '';
+
+          /* Destaque pulsante se desbloqueado mas não concluído */
+          if (!dados.done) {
+            card.classList.add('destaque');
+          } else {
+            card.classList.remove('destaque');
+          }
+        }
+      });
+
+      /* Score total no HUD */
+      document.getElementById('score-hud-val').textContent =
+        window.Progresso.getScoreTotal().toLocaleString('pt-BR');
+
+      /* Aviso ranking: ocultar se todas concluídas */
+      const todas = window.Progresso.todasConcluidas();
+      document.getElementById('aviso-ranking').style.display = todas ? 'none' : 'flex';
+
+      /* Botão pontuação final */
+      if (todas) {
+        document.getElementById('btn-pontuacao').style.display = 'block';
+      }
+    }
+
+    /**
+     * entrarFase(n)
+     * Navega para a fase N se estiver desbloqueada.
+     */
+    function entrarFase(n) {
+      if (!window.Progresso.isDesbloqueada(n)) return;
+      window.location.href = 'fase' + n + '.html';
+    }
+
+    /* ── Init ── */
+    document.addEventListener('DOMContentLoaded', function() {
+      carregarMapa();
+      if (window.AudioEngine) window.AudioEngine.tocarTrack('menu');
+      if (screen.orientation && screen.orientation.lock)
+        screen.orientation.lock('landscape').catch(function(){});
+    });
+  </script>
+</body>
+</html>

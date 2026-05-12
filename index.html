@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Répteis da Caatinga – O Museu Vivo: jogo educativo sobre os répteis do semiárido." />
+  <title>Répteis da Caatinga – O Museu Vivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Teko:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0D0500" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    #ceu {
+      position: absolute; inset: 0;
+      background: linear-gradient(170deg, #060A14 0%, #0E1628 35%, #1A1208 70%, #2A1000 100%);
+      overflow: hidden;
+    }
+    .estrela-ceu {
+      position: absolute; width: 4px; height: 4px; background: #fff;
+      border-radius: 50%;
+      animation: piscar-estrela var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+      opacity: 0.15;
+    }
+    @keyframes piscar-estrela {
+      0%,100% { opacity: 0.15; transform: scale(0.8); }
+      50%      { opacity: 1;   transform: scale(1.2); }
+    }
+    #lua {
+      position: absolute; top: 28px; right: 72px; width: 50px; height: 50px;
+      background: radial-gradient(circle at 35% 35%, #FFFBE6, #D4C88A);
+      border-radius: 50%;
+      box-shadow: 0 0 18px 6px rgba(212,200,138,.35), 0 0 55px 18px rgba(212,200,138,.1);
+    }
+    #horizonte {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 175px;
+      pointer-events: none;
+    }
+    .solo {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 50px;
+      background: linear-gradient(180deg, #1A0A00, #0D0500);
+    }
+    .mandu { position: absolute; bottom: 48px; }
+    .mandu-trunk {
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      background: #140800; border-radius: 3px 3px 0 0;
+    }
+    .mandu-cap {
+      position: absolute; background: #140800;
+      border-radius: 50% 50% 0 0;
+    }
+    .mandu-arm { position: absolute; background: #140800; border-radius: 3px; }
+    .mandu-arm-cap { position: absolute; background: #140800; border-radius: 2px 2px 0 0; }
+    .poeira {
+      position: absolute; width: 3px; height: 3px;
+      background: rgba(212,168,67,.3); border-radius: 50%;
+      animation: poeiraSobe var(--pd, 8s) ease-in-out infinite var(--pdy, 0s);
+    }
+    @keyframes poeiraSobe {
+      0%   { transform: translateY(0) translateX(0); opacity: 0; }
+      20%  { opacity: .8; }
+      80%  { opacity: .4; }
+      100% { transform: translateY(-110px) translateX(18px); opacity: 0; }
+    }
+    #conteudo {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 10; padding-bottom: 22px;
+    }
+    #moldura {
+      border: 2px solid rgba(212,168,67,.42); padding: 26px 38px 22px;
+      position: relative; display: flex; flex-direction: column;
+      align-items: center; gap: 10px;
+      background: rgba(13,5,0,.56); backdrop-filter: blur(2px);
+    }
+    #moldura::before { content:'◆'; position:absolute; top:-8px; left:50%; transform:translateX(-50%); color:var(--ouro); font-size:10px; opacity:.7; }
+    #moldura::after  { content:'◆'; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); color:var(--ouro); font-size:10px; opacity:.7; }
+    .canto { position: absolute; width:13px; height:13px; border-color:var(--ouro); border-style:solid; opacity:.6; }
+    .canto.tl { top:4px; left:4px; border-width:2px 0 0 2px; }
+    .canto.tr { top:4px; right:4px; border-width:2px 2px 0 0; }
+    .canto.bl { bottom:4px; left:4px; border-width:0 0 2px 2px; }
+    .canto.br { bottom:4px; right:4px; border-width:0 2px 2px 0; }
+    #deco-topo { font-size:26px; line-height:1; margin-bottom:-2px; filter: drop-shadow(0 0 8px rgba(212,168,67,.6)); }
+    #titulo {
+      font-family:'Press Start 2P',monospace; font-size:20px; color:#FFD700;
+      text-align:center; line-height:1.5; letter-spacing:.02em;
+      text-shadow: 0 0 18px rgba(255,215,0,.5), 2px 2px 0 #5A3A00;
+    }
+    #subtitulo {
+      font-family:'Teko',sans-serif; font-size:28px; font-weight:500;
+      color:var(--ouro); letter-spacing:.24em; text-transform:uppercase; margin-top:-4px;
+    }
+    .sep {
+      width:100%; height:3px; margin:2px 0;
+      background: linear-gradient(90deg, transparent 0%, var(--ouro) 30%, var(--ouro) 70%, transparent 100%);
+      position:relative;
+    }
+    .sep::after { content:''; position:absolute; top:5px; left:10%; right:10%; height:1px; background:linear-gradient(90deg,transparent,rgba(212,168,67,.45),transparent); }
+    #cordel {
+      min-height:74px; text-align:center; font-family:'Teko',sans-serif;
+      font-style:italic; font-size:17px; color:var(--creme); line-height:1.55;
+      display:flex; flex-direction:column; align-items:center; gap:1px;
+    }
+    .verso { opacity:0; transform:translateY(10px); transition: opacity .5s ease, transform .5s ease; }
+    .verso.visivel { opacity:1; transform:translateY(0); }
+    #botoes { display:flex; gap:14px; margin-top:6px; }
+    #btn-jogar { font-size:.75rem; padding:14px 36px; animation:pulso-ouro 2.5s ease infinite; }
+    #btn-sobre { font-size:.6rem; padding:14px 20px; }
+    #rodape {
+      position:absolute; bottom:7px; left:0; right:0; text-align:center;
+      font-family:'Teko',sans-serif; font-size:13px; color:#6B5030;
+      letter-spacing:.1em; z-index:10;
+    }
+    /* Overlay Sobre */
+    #overlay-sobre { display:none; }
+    #overlay-sobre.ativo { display:flex; animation:entrar-baixo .3s ease both; }
+    #sobre-card { max-width:590px; width:90%; position:relative; }
+    #sobre-card h2 { font-size:.7rem; margin-bottom:14px; }
+    #sobre-card p { font-size:1.1rem; margin-bottom:9px; line-height:1.5; }
+    .destaque-sobre {
+      background:rgba(42,20,0,.07); border-left:3px solid var(--escuro);
+      padding:8px 12px; font-size:1.05rem; margin:10px 0;
+    }
+    .acoes { display:flex; justify-content:flex-end; margin-top:18px; }
+    #btn-fechar-sobre {
+      font-size:.54rem; padding:10px 18px; background:transparent;
+      border:2px solid var(--escuro); color:var(--escuro);
+      font-family:'Press Start 2P',monospace; cursor:pointer;
+      border-radius:4px; transition:background .2s;
+    }
+    #btn-fechar-sobre:hover { background:rgba(42,20,0,.12); }
+  </style>
+</head>
+<body>
+  <div id="aviso-rotacao" role="alert" aria-live="polite">
+    <div class="icone-rotacao">📱</div>
+    <p style="font-family:'Press Start 2P',monospace;font-size:.65rem;color:var(--ouro);line-height:1.8;text-align:center;">
+      Gire o dispositivo<br>para paisagem
+    </p>
+  </div>
+
+  <div class="tela" id="tela-menu">
+    <div id="ceu"><div id="lua"></div></div>
+    <div id="horizonte"><div class="solo"></div></div>
+
+    <div id="conteudo">
+      <div id="moldura">
+        <div class="canto tl"></div><div class="canto tr"></div>
+        <div class="canto bl"></div><div class="canto br"></div>
+        <div id="deco-topo">🦎</div>
+        <h1 id="titulo">RÉPTEIS DA<br>CAATINGA</h1>
+        <p id="subtitulo">O Museu Vivo</p>
+        <div class="sep"></div>
+        <div id="cordel" role="status" aria-live="polite">
+          <span class="verso" id="verso-0">No sertão da Paraíba</span>
+          <span class="verso" id="verso-1">Existe um museu especial</span>
+          <span class="verso" id="verso-2">Onde vivem os répteis</span>
+          <span class="verso" id="verso-3">Num cantinho sem igual</span>
+        </div>
+        <div class="sep"></div>
+        <div id="botoes">
+          <button class="btn-ouro" id="btn-jogar" onclick="irParaMapa()">▶ JOGAR</button>
+          <button class="btn-borda" id="btn-sobre" onclick="abrirSobre()">SOBRE</button>
+        </div>
+      </div>
+    </div>
+
+    <footer id="rodape">Unifacisa × Museu Vivo &nbsp;·&nbsp; Puxinanã–PB</footer>
+  </div>
+
+  <!-- Overlay Sobre -->
+  <div class="overlay" id="overlay-sobre" role="dialog" aria-modal="true" aria-labelledby="sobre-titulo">
+    <div class="card-xilo" id="sobre-card">
+      <h2 id="sobre-titulo">🏛️ Sobre o Projeto</h2>
+      <p>O <strong>Museu Vivo dos Répteis da Caatinga</strong> é uma iniciativa de conservação e educação ambiental localizada em <strong>Puxinanã, Paraíba</strong>.</p>
+      <div class="destaque-sobre">
+        Fundado por <strong>Silvaney Medeiros</strong>, o museu abriga espécimes vivos de cobras, lagartos e jacarés nativos do semiárido nordestino, promovendo o respeito e o conhecimento sobre a fauna local.
+      </div>
+      <p>Este jogo foi desenvolvido em parceria com a <strong>Unifacisa</strong> para levar o museu às salas de aula, aproximando crianças e jovens do patrimônio natural da Caatinga.</p>
+      <p style="font-size:1rem;color:#5A3A00;margin-top:6px;">🐍 Cobra &nbsp;|&nbsp; 🦎 Dragão &nbsp;|&nbsp; 🐊 Jacaré</p>
+      <div class="acoes">
+        <button id="btn-fechar-sobre" onclick="fecharSobre()">✕ FECHAR</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/progresso.js"></script>
+  <script src="js/audio.js"></script>
+  <script>
+    /* ── Estrelas ── */
+    (function() {
+      const ceu = document.getElementById('ceu');
+      for (let i = 0; i < 60; i++) {
+        const el = document.createElement('div');
+        el.className = 'estrela-ceu';
+        const dur   = (2 + Math.random() * 2).toFixed(2) + 's';
+        const delay = (Math.random() * 4).toFixed(2) + 's';
+        const size  = Math.random() < .15 ? 5 : 3;
+        el.style.cssText = `--dur:${dur};--delay:${delay};top:${Math.random()*68}%;left:${Math.random()*100}%;width:${size}px;height:${size}px;`;
+        ceu.appendChild(el);
+      }
+    })();
+
+    /* ── Poeira ── */
+    (function() {
+      const ceu = document.getElementById('ceu');
+      for (let i = 0; i < 12; i++) {
+        const el = document.createElement('div');
+        el.className = 'poeira';
+        el.style.cssText = `--pd:${6+Math.random()*6}s;--pdy:${Math.random()*8}s;bottom:${10+Math.random()*40}%;left:${5+Math.random()*90}%;`;
+        ceu.appendChild(el);
+      }
+    })();
+
+    /* ── Mandacarus ── */
+    (function() {
+      const h = document.getElementById('horizonte');
+      const cfgs = [
+        {left:'3%',  th:88, tw:14, arms:[{s:'r',y:44,aw:10,ah:34,ch:16}]},
+        {left:'13%', th:62, tw:10, arms:[]},
+        {left:'23%', th:108,tw:16, arms:[{s:'l',y:54,aw:10,ah:40,ch:18},{s:'r',y:68,aw:10,ah:28,ch:13}]},
+        {left:'37%', th:48, tw:8,  arms:[{s:'r',y:27,aw:8, ah:24,ch:11}]},
+        {left:'54%', th:93, tw:15, arms:[{s:'l',y:50,aw:10,ah:38,ch:16}]},
+        {left:'66%', th:70, tw:12, arms:[]},
+        {left:'77%', th:112,tw:17, arms:[{s:'l',y:60,aw:11,ah:42,ch:18},{s:'r',y:74,aw:11,ah:32,ch:14}]},
+        {left:'87%', th:56, tw:9,  arms:[{s:'l',y:34,aw:8, ah:26,ch:11}]},
+        {left:'95%', th:78, tw:13, arms:[]},
+      ];
+      cfgs.forEach(cfg => {
+        const wrap = document.createElement('div');
+        wrap.className = 'mandu';
+        wrap.style.left = cfg.left;
+
+        const trunk = document.createElement('div');
+        trunk.className = 'mandu-trunk';
+        trunk.style.cssText = `width:${cfg.tw}px;height:${cfg.th}px;`;
+
+        // Tampa do tronco
+        const cap = document.createElement('div');
+        cap.className = 'mandu-cap';
+        cap.style.cssText = `width:${cfg.tw+4}px;height:${cfg.tw}px;top:-${cfg.tw-1}px;left:-2px;`;
+        trunk.appendChild(cap);
+
+        // Ramos
+        cfg.arms.forEach(arm => {
+          const isL = arm.s === 'l';
+          const ramo = document.createElement('div');
+          ramo.className = 'mandu-arm';
+          ramo.style.cssText = `width:28px;height:${arm.aw}px;bottom:${arm.y}px;${isL?`right:${cfg.tw-2}px`:`left:${cfg.tw-2}px`};border-radius:${isL?'4px 0 0 4px':'0 4px 4px 0'};`;
+          const rc = document.createElement('div');
+          rc.className = 'mandu-arm-cap';
+          rc.style.cssText = `width:${arm.aw+4}px;height:${arm.ch}px;top:-${arm.ch}px;${isL?'left:-2px':'right:-2px'};`;
+          ramo.appendChild(rc);
+          trunk.appendChild(ramo);
+        });
+
+        wrap.appendChild(trunk);
+        h.appendChild(wrap);
+      });
+    })();
+
+    /* ── Cordel ── */
+    document.querySelectorAll('.verso').forEach((v, i) => {
+      setTimeout(() => v.classList.add('visivel'), 600 + i * 800);
+    });
+
+    /* ── Ações ── */
+    function irParaMapa() { window.location.href = 'mapa.html'; }
+    function abrirSobre() { document.getElementById('overlay-sobre').classList.add('ativo'); }
+    function fecharSobre(){ document.getElementById('overlay-sobre').classList.remove('ativo'); }
+
+    document.getElementById('overlay-sobre').addEventListener('click', function(e) {
+      if (e.target === this) fecharSobre();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharSobre(); });
+
+  /* ── Áudio: tocar trilha do menu na 1ª interação ── */
+  document.addEventListener('click', function() {
+    if (window.AudioEngine) window.AudioEngine.tocarTrack('menu');
+  }, { once: true });
+
+  /* ── Orientation lock ── */
+  document.addEventListener('click', function() {
+    if (screen.orientation && screen.orientation.lock)
+      screen.orientation.lock('landscape').catch(function(){});
+  }, { once: true });
+
+  /* ── Service Worker ── */
+  if ('serviceWorker' in navigator)
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  </script>
+</body>
+</html>

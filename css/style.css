@@ -1,0 +1,356 @@
+/* ============================================================
+   Répteis da Caatinga – O Museu Vivo
+   css/style.css  –  Estilos Globais
+   ============================================================ */
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Teko:wght@300;400;500;600;700&display=swap');
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Variáveis de Paleta ── */
+:root {
+  --ouro:   #D4A843;
+  --creme:  #F5E6C8;
+  --marrom: #0D0500;
+  --escuro: #2A1400;
+  --verde:  #3A6B20;
+
+  /* Tokens extras */
+  --fonte-titulo: 'Press Start 2P', monospace;
+  --fonte-corpo:  'Teko', sans-serif;
+  --raio:         4px;
+  --transicao:    0.2s ease;
+}
+
+/* ── Body ── */
+body {
+  background: var(--marrom);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: var(--fonte-corpo);
+  color: var(--creme);
+  overflow: hidden;
+}
+
+/* ── Tela Principal (800 × 480) ── */
+.tela {
+  width: 800px;
+  height: 480px;
+  position: relative;
+  overflow: hidden;
+  background: var(--escuro);
+  border: 2px solid var(--ouro);
+  box-shadow: 0 0 40px rgba(212, 168, 67, 0.25), inset 0 0 60px rgba(0,0,0,0.6);
+}
+
+/* ── Botão Ouro (primário) ── */
+.btn-ouro {
+  background: var(--ouro);
+  color: var(--marrom);
+  font-family: var(--fonte-titulo);
+  font-size: 0.7rem;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--raio);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: filter var(--transicao), transform var(--transicao);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.btn-ouro:hover {
+  filter: brightness(1.15);
+  transform: translateY(-2px);
+}
+
+.btn-ouro:active {
+  transform: translateY(0);
+  filter: brightness(0.95);
+}
+
+.btn-ouro:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+/* ── Botão Borda (secundário) ── */
+.btn-borda {
+  background: transparent;
+  border: 2px solid var(--ouro);
+  color: var(--creme);
+  font-family: var(--fonte-titulo);
+  font-size: 0.65rem;
+  padding: 12px 24px;
+  border-radius: var(--raio);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background var(--transicao), color var(--transicao), transform var(--transicao);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.btn-borda:hover {
+  background: rgba(212, 168, 67, 0.15);
+  transform: translateY(-2px);
+}
+
+.btn-borda:active {
+  transform: translateY(0);
+}
+
+/* ── Overlay ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 5, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* ── Card Xilogravura ── */
+.card-xilo {
+  background: var(--creme);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 22px,
+      rgba(42, 20, 0, 0.07) 22px,
+      rgba(42, 20, 0, 0.07) 23px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 60px,
+      rgba(42, 20, 0, 0.03) 60px,
+      rgba(42, 20, 0, 0.03) 61px
+    );
+  border: 3px solid var(--escuro);
+  border-radius: var(--raio);
+  padding: 32px;
+  font-family: var(--fonte-corpo);
+  color: var(--escuro);
+  position: relative;
+  box-shadow: 4px 4px 0 var(--escuro);
+  max-width: 680px;
+  width: 100%;
+}
+
+/* Detalhe de canto da xilogravura */
+.card-xilo::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(42, 20, 0, 0.18);
+  pointer-events: none;
+}
+
+.card-xilo h2,
+.card-xilo h3 {
+  font-family: var(--fonte-titulo);
+  color: var(--escuro);
+  margin-bottom: 12px;
+}
+
+.card-xilo p {
+  font-size: 1.15rem;
+  line-height: 1.55;
+}
+
+/* ── HUD / Barra Superior ── */
+.hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: rgba(13, 5, 0, 0.75);
+  border-bottom: 1px solid rgba(212, 168, 67, 0.3);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 24px;
+  font-family: var(--fonte-titulo);
+  font-size: 0.55rem;
+  color: var(--ouro);
+  z-index: 10;
+}
+
+.hud span { color: var(--creme); }
+
+/* ── Estrelas ── */
+.estrelas {
+  display: flex;
+  gap: 4px;
+}
+
+.estrela {
+  width: 16px;
+  height: 16px;
+  opacity: 0.25;
+  filter: grayscale(1);
+  transition: opacity 0.3s, filter 0.3s;
+}
+
+.estrela.ativa {
+  opacity: 1;
+  filter: none;
+}
+
+/* ── Utilitários ── */
+.texto-ouro  { color: var(--ouro); }
+.texto-creme { color: var(--creme); }
+.texto-verde { color: var(--verde); }
+.texto-titulo { font-family: var(--fonte-titulo); }
+.texto-corpo  { font-family: var(--fonte-corpo); }
+
+.centralizado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  gap: 16px;
+}
+
+/* Separador decorativo */
+.separador-ouro {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ouro), transparent);
+  margin: 12px 0;
+}
+
+/* ── Animações Globais ── */
+@keyframes pulso-ouro {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(212, 168, 67, 0);  }
+}
+
+@keyframes entrar-baixo {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes entrar-cima {
+  from { transform: translateY(-24px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+@keyframes piscar {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.animar-entrada { animation: entrar-baixo 0.4s ease both; }
+.piscar         { animation: piscar 1s step-end infinite; }
+
+/* ── Escala responsiva — controlada 100% via JS (_ajustarEscala em progresso.js) ── */
+/* .tela pages: position:fixed + translate(-50%,-50%) + scale(min(vw/800,vh/480))   */
+/* Scrollable pages (.res-wrap/.final-wrap): scale by width + overflow:auto          */
+html, body {
+  width: 100%;
+  height: 100%;
+  /* overflow gerenciado por JS por tipo de página */
+}
+
+/* Telas grandes (>= 800×480): .tela fica no fluxo normal, centralizado por flexbox */
+/* Telas pequenas: JS aplica position:fixed + scale, definido abaixo */
+.tela-fixed {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform-origin: center center !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+
+/* ── Aviso de Rotação (portrait) ── */
+#aviso-rotacao {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--marrom);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+  padding: 24px;
+}
+
+#aviso-rotacao .icone-rotacao {
+  font-size: 3rem;
+  animation: rotacionar 2s ease-in-out infinite;
+}
+
+@keyframes rotacionar {
+  0%   { transform: rotate(0deg);   }
+  25%  { transform: rotate(-90deg); }
+  75%  { transform: rotate(-90deg); }
+  100% { transform: rotate(0deg);   }
+}
+
+@media (orientation: portrait) {
+  #aviso-rotacao { display: flex; }
+}
+
+/* ── Bloqueio CSS adicional em portrait (reforço) ── */
+@media (orientation: portrait) and (max-width: 900px) {
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 99998;
+    background: #0D0500;
+  }
+  body::after {
+    content: '↻  Gire o dispositivo\A O jogo funciona em\A modo paisagem  🌵';
+    white-space: pre;
+    position: fixed; inset: 0; z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 32px;
+    color: #D4A843;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(10px, 2.5vw, 14px);
+    line-height: 2.4;
+  }
+}
+
+/* ── Impressão: zerar overlays de orientação e UI de jogo ── */
+@media print {
+  /* Suprimir pseudo-elementos do bloqueio portrait */
+  body::before,
+  body::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* Suprimir aviso de rotação HTML */
+  #aviso-rotacao { display: none !important; }
+
+  /* Fundo branco e cores de tela legíveis */
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    display: block !important;
+    min-height: auto !important;
+  }
+}
+

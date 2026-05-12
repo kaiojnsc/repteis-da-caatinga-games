@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Fase 2 – O Dragão Barbudo | Répteis da Caatinga" />
+  <title>Fase 2 – Dragão Barbudo | Répteis da Caatinga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Teko:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0D0500" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Layout da tela ── */
+    #tela-fase2 {
+      display: flex;
+      flex-direction: column;
+      background: #0D0500;
+      width: 800px;
+      height: 480px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Canvas ── */
+    #canvas-fase2 {
+      display: block;
+      width: 800px;
+      height: 428px; /* 480 - 52 (HUD) */
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      margin-top: 52px;
+    }
+
+    /* Controles mobile básicos se for precisar */
+    #mobile-controls {
+      display: none;
+      position: absolute;
+      bottom: 10px; left: 0; right: 0;
+      justify-content: space-between;
+      padding: 0 10px;
+      z-index: 20;
+      pointer-events: none;
+    }
+    .ctrl-group { display: flex; gap: 6px; pointer-events: all; }
+    .ctrl-btn {
+      width: 52px; height: 52px;
+      background: rgba(212,168,67,.25);
+      border: 2px solid rgba(212,168,67,.5);
+      border-radius: 50%;
+      color: #D4A843; font-size: 22px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .ctrl-btn:active { background: rgba(212,168,67,.5); }
+
+    @media (hover: none) and (pointer: coarse) {
+      #mobile-controls { display: flex; }
+    }
+
+    /* Aviso de rotação */
+    #aviso-rotacao { display: none; }
+    @media (orientation: portrait) { #aviso-rotacao { display: flex; } }
+  </style>
+</head>
+<body>
+  <!-- Aviso rotação portrait -->
+  <div id="aviso-rotacao" role="alert" aria-live="polite">
+    <div class="icone-rotacao">📱</div>
+    <p style="font-family:'Press Start 2P',monospace;font-size:.65rem;color:var(--ouro);line-height:1.8;text-align:center;">
+      Gire o dispositivo<br>para paisagem
+    </p>
+  </div>
+
+  <!-- Tela principal do jogo -->
+  <div class="tela" id="tela-fase2">
+
+    <!-- HUD solicitado -->
+    <div id="hud2" style="position:fixed;top:0;left:0;width:100%;height:52px;
+      background:#0D0500;border-bottom:1px solid #D4A843;display:flex;
+      align-items:center;justify-content:space-between;padding:0 20px;z-index:50;">
+      <span id="h2-score" style="font-family:'Press Start 2P';font-size:10px;color:#FFD700">PONTOS: 0</span>
+      <span id="h2-vidas">❤️ ❤️ ❤️</span>
+      <span id="h2-timer" style="font-family:'Press Start 2P';font-size:10px;color:#F5E6C8">5:00</span>
+      <span id="h2-insetos" style="font-family:'Press Start 2P';font-size:10px;color:#88FF88">🦗 0</span>
+      <button id="h2-mudo" style="background:none;border:none;color:#D4A843;font-size:20px;cursor:pointer">🔊</button>
+    </div>
+
+    <!-- Canvas do jogo -->
+    <canvas id="canvas-fase2" width="800" height="428"></canvas>
+
+    <!-- Overlay solicitado -->
+    <div id="overlay-fase2" style="display:none;position:fixed;inset:0;
+      background:rgba(13,5,0,0.92);z-index:200;align-items:center;
+      justify-content:center;flex-direction:column;gap:20px"></div>
+
+    <!-- Controles touch (mobile) -->
+    <div id="mobile-controls" aria-hidden="true">
+      <div class="ctrl-group">
+        <div class="ctrl-btn" id="btn-left"  aria-label="Mover esquerda">←</div>
+        <div class="ctrl-btn" id="btn-right" aria-label="Mover direita">→</div>
+        <div class="ctrl-btn" id="btn-duck"  aria-label="Agachar">↓</div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-btn" id="btn-jump" aria-label="Pular" style="background:rgba(212,168,67,.4);font-size:26px;">↑</div>
+      </div>
+    </div>
+
+  </div><!-- /tela-fase2 -->
+
+  <!-- ══ SCRIPTS ══ -->
+  <script src="js/progresso.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/card.js"></script>
+  <script src="js/game-fase2.js?v=2"></script>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Resultado da fase – Répteis da Caatinga" />
+  <title>Resultado | Répteis da Caatinga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Teko:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0D0500" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    html, body {
+      display: block !important;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow: visible !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+    }
+    body {
+      padding: 20px 0;
+      background: linear-gradient(160deg, #060A14, #0E1020 50%, #1A0A00) fixed;
+    }
+    .res-wrap { width:100%; max-width:800px; min-height:100%; display:flex; align-items:center; justify-content:center; margin:0 auto; padding: 20px 10px; }
+    #card-resultado { max-width:640px; width:96%; animation:entrar-baixo .5s cubic-bezier(.22,.61,.36,1) both; }
+    #fase-banner { font-family:'Teko',sans-serif; font-size:14px; color:#D4A843; text-transform:uppercase; letter-spacing:.2em; margin-bottom:6px; }
+    #animal-nome { font-family:'Press Start 2P',monospace; font-size:14px; color:var(--escuro); line-height:1.6; margin-bottom:4px; }
+    #animal-emoji { font-size:52px; line-height:1; filter:drop-shadow(0 0 10px rgba(212,168,67,.5)); margin-bottom:8px; }
+    .res-sep { width:100%; height:2px; margin:12px 0; background:linear-gradient(90deg,transparent,#2A1400 20%,#2A1400 80%,transparent); opacity:.4; }
+    #estrelas-wrap { display:flex; gap:8px; justify-content:center; font-size:28px; margin:8px 0; }
+    .star-on  { color:#D4A843; text-shadow:0 0 8px rgba(212,168,67,.6); }
+    .star-off { color:#888; opacity:.5; }
+    #score-display { font-family:'Press Start 2P',monospace; font-size:22px; color:#FFD700; text-shadow:0 0 16px rgba(255,215,0,.4),2px 2px 0 #5A3A00; }
+    #tempo-display { font-family:'Teko',sans-serif; font-size:18px; color:#8A6030; margin:4px 0 0; }
+    #bloco-curiosidade { background:rgba(42,20,0,.08); border-left:4px solid #2A1400; border-radius:0 4px 4px 0; padding:12px 16px; margin:10px 0; }
+    #bloco-curiosidade strong { font-family:'Press Start 2P',monospace; font-size:7px; display:block; margin-bottom:8px; color:#5A3A00; }
+    #bloco-curiosidade p { font-size:17px; line-height:1.5; color:#2A1400; }
+    #botoes-resultado { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+    #botoes-resultado .btn-ouro  { font-size:.55rem; padding:12px 20px; }
+    #botoes-resultado .btn-borda { font-size:.5rem;  padding:12px 16px; }
+
+  </style>
+</head>
+<body>
+  <div id="aviso-rotacao" role="alert" aria-live="polite">
+    <div class="icone-rotacao">📱</div>
+    <p style="font-family:'Press Start 2P',monospace;font-size:.65rem;color:var(--ouro);line-height:1.8;text-align:center;">Gire o dispositivo<br>para paisagem</p>
+  </div>
+
+  <div class="res-wrap">
+    <div class="card-xilo" id="card-resultado">
+      <div style="text-align:center;">
+        <div id="fase-banner">⭐ Fase <span id="fase-num">?</span> Concluída</div>
+        <div id="animal-emoji">🦎</div>
+        <div id="animal-nome">CARREGANDO…</div>
+        <div style="font-family:'Teko',sans-serif;font-size:15px;color:#8A6030;font-style:italic;" id="animal-especie"></div>
+      </div>
+      <div class="res-sep"></div>
+      <div id="estrelas-wrap"></div>
+      <div style="text-align:center;">
+        <div id="score-display">00000 PTS</div>
+        <div id="tempo-display"></div>
+      </div>
+      <div class="res-sep"></div>
+      <div id="bloco-curiosidade">
+        <strong>💡 CURIOSIDADE DESBLOQUEADA</strong>
+        <p id="curiosidade-texto"></p>
+      </div>
+      <div id="botoes-resultado">
+        <button class="btn-ouro"  id="btn-reiniciar">↺ REINICIAR</button>
+        <button class="btn-borda" id="btn-mapa">🗺️ MAPA</button>
+        <button class="btn-ouro"  id="btn-final" style="display:none;">🏆 VER PONTUAÇÃO FINAL</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/progresso.js"></script>
+  <script src="js/card.js"></script>
+  <script>
+    (function(){
+      const fase = parseInt(new URLSearchParams(location.search).get('fase'),10)||1;
+      const dados = window.Progresso.getProgresso()['fase'+fase];
+      const a = window.AnimaisData[fase];
+      document.title = 'Fase '+fase+' – '+a.nome+' | Répteis da Caatinga';
+      document.getElementById('fase-num').textContent    = fase;
+      document.getElementById('animal-emoji').textContent = a.emoji;
+      document.getElementById('animal-nome').textContent  = a.nome;
+      document.getElementById('animal-especie').textContent = a.especie;
+      document.getElementById('score-display').textContent = String(dados.score).padStart(5,'0')+' PTS';
+      const min=Math.floor(dados.tempo/60), seg=dados.tempo%60;
+      document.getElementById('tempo-display').textContent =
+        '⏱ '+(min>0?min+' min ':'')+seg+'s jogados';
+      document.getElementById('curiosidade-texto').textContent = a.curiosidade;
+      const sw=document.getElementById('estrelas-wrap');
+      for(let i=1;i<=5;i++){
+        const s=document.createElement('span');
+        s.textContent=i<=dados.estrelas?'★':'☆';
+        s.className=i<=dados.estrelas?'star-on':'star-off';
+        sw.appendChild(s);
+      }
+      document.getElementById('btn-reiniciar').onclick=function(){ window.location.href='fase'+fase+'.html'; };
+      document.getElementById('btn-mapa').onclick=function(){ window.location.href='mapa.html'; };
+      if(window.Progresso.todasConcluidas()){
+        const bf=document.getElementById('btn-final');
+        bf.style.display=''; bf.onclick=function(){ window.location.href='final.html'; };
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "Répteis da Caatinga — O Museu Vivo",
+  "short_name": "Caatinga Game",
+  "description": "Jogo educativo do Museu Vivo de Puxinanã–PB. Explore a Caatinga com Juquinha, o Dragão e o Jacaré!",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "theme_color": "#0D0500",
+  "background_color": "#0D0500",
+  "lang": "pt-BR",
+  "categories": ["education", "games", "kids"],
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    { "name": "Ir ao Mapa", "short_name": "Mapa", "url": "/mapa.html", "description": "Ver o mapa do museu" }
+  ]
+}
